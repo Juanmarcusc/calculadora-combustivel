@@ -7,20 +7,43 @@ import './App.css'
   se o resultado for menor do que 0.7 compensa usar Alcool
 */
 
+interface InfoProps{
+  title: string;
+  gasolina: string | number;
+  alcool: string | number;
+}
 
 function App() {
 
-  const [gasolinaInput, setAlcoolInput] = useState(0)
+  const [gasolinaInput, setGasolinaInput] = useState(0)
   const [alcoolInput, setAlcoolInput] = useState(0)
+  const [info, setInfo] = useState<InfoProps>()
 
   function calcular(event: FormEvent){
     event.preventDefault();
-    let calculo =(alcoolInput / gasolinaInput)
+    const calculo =(alcoolInput / gasolinaInput)
     if(calculo <= 0.7){
-      alert("compensa usar Alcool")
+      setInfo({
+        title: "Compensa usar Álcool",
+        gasolina: formatarMoeda(gasolinaInput),
+        alcool: formatarMoeda(alcoolInput)
+      })
     }else{
-      alert("Compensar usar gasolina")
+      setInfo({
+        title: "Compensa usar Gasolina",
+        gasolina: formatarMoeda(gasolinaInput),
+        alcool: formatarMoeda(alcoolInput)
+      })
     }
+  }
+
+  function formatarMoeda(valor: number){
+    const valorFormatado = valor.toLocaleString("pt-br",
+    {
+      style: "currency",
+      currency: "BRL"
+    })
+    return valorFormatado;
   }
 
   return (
@@ -41,27 +64,40 @@ function App() {
               type='number' 
               placeholder='R$'
               step='0.01'
-              required
               value={alcoolInput}
               onChange={(e) => setAlcoolInput(Number(e.target.value))}
+              required
             />
           </form>
 
-          <form className='form'>
+          <form className='form' onSubmit={calcular}>
             <label>
-              Gasolina(preço por litro):
+              Gasolina (preço por litro):
             </label>
             <input 
               className='input'
               type='number' 
               placeholder='R$'
               step='0.01'
+              value={gasolinaInput}
+              onChange={(e) => setGasolinaInput(Number(e.target.value))}
               required
             />
 
             <input className="btn" type="submit" value="calcular" />
           </form>
 
+          {info && Object.keys(info).length > 0 && (
+            <section className='result'>
+            <h2 className='result-title'>
+              {info.title}
+            </h2>
+          
+            <span>Álcool {info.alcool}</span>
+            <span>Gasolina {info.gasolina}</span>
+            </section>
+          
+          )}
 
         </main>
       </div>
